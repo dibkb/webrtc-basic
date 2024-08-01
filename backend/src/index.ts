@@ -1,5 +1,5 @@
 import { WebSocketServer, WebSocket } from "ws";
-import { messagesEnum, messageType } from "./types";
+import { MessageType } from "./types";
 
 const wss = new WebSocketServer({ port: 8080 });
 
@@ -9,7 +9,7 @@ let receiverSocket: null | WebSocket = null;
 wss.on("connection", (ws) => {
   ws.on("message", (data: any) => {
     const message = JSON.parse(data);
-    switch (message.type as messageType) {
+    switch (message.type as MessageType) {
       case "sender":
         senderSocket = ws;
       case "receiver":
@@ -19,7 +19,7 @@ wss.on("connection", (ws) => {
         if (senderSocket) {
           senderSocket.send(
             JSON.stringify({
-              type: messagesEnum.createAnswer,
+              type: MessageType.createAnswer,
               sdp: message.sdp,
             })
           );
@@ -29,7 +29,7 @@ wss.on("connection", (ws) => {
         if (receiverSocket) {
           receiverSocket.send(
             JSON.stringify({
-              type: messagesEnum.createOffer,
+              type: MessageType.createOffer,
               sdp: message.sdp,
             })
           );
@@ -39,7 +39,7 @@ wss.on("connection", (ws) => {
           if (receiverSocket) {
             receiverSocket.send(
               JSON.stringify({
-                type: messagesEnum.iceCandidates,
+                type: MessageType.iceCandidates,
                 candidate: message.candidate,
               })
             );
@@ -49,7 +49,7 @@ wss.on("connection", (ws) => {
           if (senderSocket) {
             senderSocket.send(
               JSON.stringify({
-                type: messagesEnum.iceCandidates,
+                type: MessageType.iceCandidates,
                 candidate: message.candidate,
               })
             );
